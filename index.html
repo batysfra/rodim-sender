@@ -10,20 +10,25 @@
   </button>
 
   <script>
-    const key = 'd-e8oKQqBAd0GyPCR-S_3F';       // from IFTTT Webhooks docs
-    const event = 'rodim_pressed';
-    document.getElementById('rodimBtn')
-      .addEventListener('click', () => {
-        fetch(`https://maker.ifttt.com/trigger/${event}/with/key/${key}`)
-          .then(r => {
-            if (r.ok) alert('✅ SMS sent!');
-            else   alert('❌ Failed to send SMS');
-          })
-          .catch(e => {
-            console.error(e);
-            alert('⚠️ Error sending SMS');
-          });
+  const url = 'https://maker.ifttt.com/trigger/rodim_pressed/with/key/YOUR_KEY';
+  document.getElementById('rodimBtn').addEventListener('click', () => {
+    fetch(url)
+      .then(async res => {
+        const text = await res.text();               // grab the response body
+        console.log('Status:', res.status, text);    // inspect in DevTools
+        // treat any 2xx status as success:
+        if (res.status >= 200 && res.status < 300) {
+          alert('✅ SMS sent!');
+        } else {
+          alert(`❌ Failed to send SMS (HTTP ${res.status})`);
+        }
+      })
+      .catch(err => {
+        console.error('Network error:', err);
+        alert('⚠️ Network error—check console');
       });
-  </script>
+  });
+</script>
+
 </body>
 </html>
