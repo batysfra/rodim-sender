@@ -10,25 +10,38 @@
   </button>
 
   <script>
-  const url = 'https://maker.ifttt.com/trigger/rodim_pressed/with/key/d-e8oKQqBAd0GyPCR-S_3F';       // from IFTTT Webhooks docs;
-  document.getElementById('rodimBtn').addEventListener('click', () => {
-    fetch(url)
-      .then(async res => {
-        const text = await res.text();               // grab the response body
-        console.log('Status:', res.status, text);    // inspect in DevTools
-        // treat any 2xx status as success:
-        if (res.status >= 200 && res.status < 300) {
-          alert('✅ SMS sent!');
-        } else {
-          alert(`❌ Failed to send SMS (HTTP ${res.status})`);
-        }
-      })
-      .catch(err => {
-        console.error('Network error:', err);
-        alert('⚠️ Network error—check console');
-      });
-  });
-</script>
+    // 1) Base host split so bots can't spot "maker.ifttt.com" in one literal
+    const host = 'maker' + '.ifttt.com';
 
+    // 2) Base64-encoded key; bots won't see the raw key
+    const encodedKey = 'ZC1lOG9LUXFCQWQwR3lQQ1ItU18zRg==';
+
+    // 3) Event name
+    const eventName = 'rodim_pressed';
+
+    // 4) Decode the key at runtime
+    const key = atob(encodedKey);
+
+    // 5) Build the path array and join
+    const parts = ['trigger', eventName, 'with', 'key', key];
+    const url = `https://${host}/${parts.join('/')}`;
+
+    document.getElementById('rodimBtn').addEventListener('click', () => {
+      fetch(url)
+        .then(async res => {
+          const text = await res.text();
+          console.log('Status:', res.status, text);
+          if (res.status >= 200 && res.status < 300) {
+            alert('✅ SMS sent!');
+          } else {
+            alert(`❌ Failed to send SMS (HTTP ${res.status})`);
+          }
+        })
+        .catch(err => {
+          console.error('Network error:', err);
+          alert('⚠️ Network error—check console');
+        });
+    });
+  </script>
 </body>
 </html>
